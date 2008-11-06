@@ -1,6 +1,6 @@
 #include <allegro.h>
 #include "box.cpp"
-#include <iostream>
+#include "collision.cpp"
 
 volatile long speed_counter = 0;
 
@@ -31,26 +31,36 @@ int main() {
 	
 	srand(time(NULL));
 		
-	point points[] = {
-		* new point(  0,   0, width, height),
-		* new point(  0, 140, width, height),
-		* new point(140, 140, width, height),
-		* new point(140,   0, width, height)
+	point * points[] = {
+		new point(  0,   0, width, height),
+		new point(  0,  40, width, height),
+		new point( 40,  40, width, height),
+		new point( 40,   0, width, height)
 	};
 	
 	box boksen (points);
 	
+	point * points1[] = {
+		new point(  0,   0, width, height),
+		new point(  0,  40, width, height),
+		new point( 40,  40, width, height),
+		new point( 40,   0, width, height)
+	};
+	box boksen1 (points1);
+	
 	while (!key[KEY_ESC]) {
         while (speed_counter > 0) {
         				
-			boksen.update_phys();
+			boksen.update_phys(!(mouse_b & 1));
+			boksen1.update_phys(false);
 			
 			speed_counter--;
 		}
 		
 		boksen.draw(buffer);
+		boksen1.draw(buffer);
 		
-		//textprintf_ex(buffer, font, 10, 10, makecol(255,255,255), -1, "%f", boksen.triangles[0].points[0].pos_x);
+		if (collision_box(&boksen, &boksen1)) textprintf_ex(buffer, font, 10, 10, makecol(255,255,255), -1, "%f", boksen.points[0]->pos_x);
 		
 		blit(buffer, screen, 0, 0, 0, 0, width, height);
 		clear_bitmap(buffer);
