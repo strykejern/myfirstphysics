@@ -54,6 +54,7 @@ class triangleclass {
 	}
 	
 	void draw(BITMAP* buffer) {
+		/*
 		for (int x = 0; x < length; ++x) {
 			if (x == length - 1)
 				line(buffer, points[x].pos_x, points[x].pos_y, points[0].pos_x, points[0].pos_y, makecol(255,0,0));
@@ -61,7 +62,8 @@ class triangleclass {
 				line(buffer, points[x].pos_x, points[x].pos_y, points[x+1].pos_x, points[x+1].pos_y, makecol(255,0,0));
 		
 		}
-		/*
+		*/
+		
 		 triangle(
 			buffer, 
 			points[0].pos_x, 
@@ -71,7 +73,7 @@ class triangleclass {
 			points[2].pos_x, 
 			points[2].pos_y, 
 			makecol(255,0,0));
-		 */
+		 
 	}
 	
 	private:
