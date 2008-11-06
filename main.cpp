@@ -30,26 +30,7 @@ int main() {
     BITMAP* buffer = create_bitmap(width, height);
 	
 	srand(time(NULL));
-	
-	point points [] = { 
-		* new point (40, 40, width, height), 
-		* new point (180, 40, width, height), 
-		* new point (180, 180, width, height) 
-	};
-	
-	triangleclass boks (points);
-	
-	point points2 [] = { 
-		* new point (40, 40, width, height), 
-		* new point (180, 40, width, height), 
-		* new point (40, 180, width, height) 
-	};
-	
-	triangleclass boks2 (points2);
-	
-	boks.points[0].speed_y = -50;
-	*/
-	
+		
 	point points[] = {
 		* new point(  0,   0, width, height),
 		* new point(  0, 140, width, height),
@@ -61,24 +42,7 @@ int main() {
 	
 	while (!key[KEY_ESC]) {
         while (speed_counter > 0) {
-        	
-        	boks.update_phys();
-        	
-        	boks.points[1].pos_x = mouse_x;
-        	boks.points[1].pos_y = mouse_y;
-        	
-			boks2.points[0] = boks.points[0];
-			boks2.points[1] = boks.points[2];
-			
-        	boks2.update_phys();
-        	
-        	boks.points[1].pos_x = mouse_x;
-        	boks.points[1].pos_y = mouse_y;
-        	
-			boks.points[0] = boks2.points[0];
-			boks.points[2] = boks2.points[1];
-        	*/
-			
+        				
 			boksen.update_phys();
 			
 			speed_counter--;
