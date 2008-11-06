@@ -30,7 +30,7 @@ int main() {
     BITMAP* buffer = create_bitmap(width, height);
 	
 	srand(time(NULL));
-	/*
+	
 	point points [] = { 
 		* new point (40, 40, width, height), 
 		* new point (180, 40, width, height), 
@@ -61,7 +61,7 @@ int main() {
 	
 	while (!key[KEY_ESC]) {
         while (speed_counter > 0) {
-        	/*
+        	
         	boks.update_phys();
         	
         	boks.points[1].pos_x = mouse_x;
@@ -83,9 +83,6 @@ int main() {
 			
 			speed_counter--;
 		}
-		
-		//boks.draw(buffer);
-		//boks2.draw(buffer);
 		
 		boksen.draw(buffer);
 		
