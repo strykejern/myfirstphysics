@@ -4,78 +4,79 @@ class point : public basic_physics_object {
 	public:
 	int width, height;
 	
-	point(int x, int y, int arg_width, int arg_height) {
-		pos_x = x;
-		pos_y = y;
+	point(Vector v, int arg_width, int arg_height) {
+		pos = v;
 		width = arg_width;
 		height = arg_height;
 		default_init();
 	}
 	point() {
-		pos_x = 0;
-		pos_y = 0;
 		width = 0;
 		height = 0;
 		default_init();
 	}
 	
 	void update_phys() {
-		accel();
+		accelerate();
 		move();
 		
-		if (pos_x < 0) {
-			pos_x = 0;
-			speed_x = -speed_x * 0.5f;
-			speed_y *= 0.9f;
+		if (pos.x < 0+5) {
+			pos.x = 0+5;
+			speed.x = -speed.x * 0.5f;
+			speed.y *= 0.8f;
 		}
-		else if (pos_x > width) {
-			pos_x = width;
-			speed_x = -speed_x * 0.5f;
-			speed_y *= 0.9f;
-		}
-		
-		if (pos_y < 0) {
-			pos_y = 0;
-			speed_y = -speed_y * 0.5f;
-			speed_x *= 0.9f;
-		}
-		else if (pos_y > height) {
-			pos_y = height;
-			speed_y = -speed_y * 0.5f;
-			speed_x *= 0.9f;
+		else if (pos.x > width-5) {
+			pos.x = width-5;
+			speed.x = -speed.x * 0.5f;
+			speed.y *= 0.8f;
 		}
 		
-		int speed_max = 50;
+		if (pos.y < 0+5) {
+			pos.y = 0+5;
+			speed.y = -speed.y * 0.5f;
+			speed.x *= 0.8f;
+		}
+		else if (pos.y > height-5) {
+			pos.y = height-5;
+			speed.y = -speed.y * 0.5f;
+			speed.x *= 0.8f;
+		}
 		
-		if (speed_x > speed_max) speed_x = speed_max;
-		else if (speed_x < -speed_max) speed_x = -speed_max;
+		int speed_max = 10;
 		
-		if (speed_y > speed_max) speed_y = speed_max;
-		else if (speed_y < -speed_max) speed_y = -speed_max;
+		if (speed.x > speed_max) speed.x = speed_max;
+		else if (speed.x < -speed_max) speed.x = -speed_max;
+		
+		if (speed.y > speed_max) speed.y = speed_max;
+		else if (speed.y < -speed_max) speed.y = -speed_max;
 	}
 	
 	void attract_to(bool add, float moveX, float moveY) {
 		if (add) {
-			speed_x += moveX / 2;
-			pos_x   += moveX / 2;
+			speed.x += moveX / 4;
+			pos.x   += moveX / 2;
 			
-			speed_y += moveY / 2;
-			pos_y   += moveY / 2;
+			speed.y += moveY / 4;
+			pos.y   += moveY / 2;
 		}
 		else {
-			speed_x -= moveX / 2;
-			pos_x   -= moveX / 2;
+			speed.x -= moveX / 4;
+			pos.x   -= moveX / 2;
 			
-			speed_y -= moveY / 2;
-			pos_y   -= moveY / 2;
+			speed.y -= moveY / 4;
+			pos.y   -= moveY / 2;
 		}
+	}
+	void attract_to(Vector v) {
+		speed = speed + (v / 4);
+		pos   = pos   + (v / 2);
 	}
 
 	private:
 	void default_init() {
-		speed_x = 2;
-		speed_y = 0;
-		accel_y = 0.5f;
-		accel_x = 0;
+		speed.x = 2;
+		speed.y = 1;
+		accel.y = 0.5f;
+		accel.x = 0;
 	}
 };

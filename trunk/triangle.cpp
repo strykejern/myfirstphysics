@@ -18,34 +18,6 @@ class triangleclass {
 		
 	}
 	
-	void shape() {
-		for (int x = 0; x < length; ++x) {
-			float katX, katY;
-			if (x == length-1) {
-				katX = points[0]->pos_x - points[x]->pos_x;
-				katY = points[0]->pos_y - points[x]->pos_y;
-			}
-			else {
-				katX = points[x+1]->pos_x - points[x]->pos_x;
-				katY = points[x+1]->pos_y - points[x]->pos_y;
-			}
-			
-			float hyp  = sqrt( pow(katX, 2) + pow(katY, 2) );
-			
-			float moveX = (lengths[x]-hyp) * (katX/hyp);
-			float moveY = (lengths[x]-hyp) * (katY/hyp);
-			
-			points[x]->attract_to(false, moveX, moveY);
-			
-			if (x == length -1) {
-				points[0]->attract_to(true, moveX, moveY);
-			}
-			else {
-				points[x+1]->attract_to(true, moveX, moveY);
-			}
-		}
-	}
-	
 	void update_phys() {
 		shape();
 		for (int x = 0; x < length; x++) {
@@ -66,6 +38,25 @@ class triangleclass {
 	}
 	
 	private:
+	void shape() {
+		for (int x = 0; x < length; ++x) {
+			attract_points(points[x], points[(x<length-1) ? x+1 : 0], lengths[x]);
+		}
+	}
+	
+	void attract_points(point * p1, point * p2, float dist) {
+		float katX = p2->pos_x - p1->pos_x;
+		float katY = p2->pos_y - p1->pos_y;
+		
+		float hyp  = sqrt( pow(katX, 2) + pow(katY, 2) );
+		
+		float moveX = (dist-hyp) * (katX/hyp);
+		float moveY = (dist-hyp) * (katY/hyp);
+		
+		p1->attract_to(false, moveX, moveY);
+		p2->attract_to(true , moveX, moveY);
+	}
+	
 	void default_init() {
 		length = 3;
 		
