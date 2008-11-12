@@ -1,115 +1,120 @@
-#include "triangle.cpp"
+#include "point.cpp"
 
 class box {
 	public:
-	triangleclass triangles[3];
-	point * points[4];
+	point points[4];
+	float lengths[6];
 	
-	box(point * arg_points[4]) {
-		points[0] = arg_points[0];
-		points[1] = arg_points[1];
-		points[2] = arg_points[2];
-		points[3] = arg_points[3];
+	box(point arg_points[4]) {
+		for (int x = 0; x < 4; ++x)
+			points[x] = arg_points[x];
 		
-		point * arg_points1[] = {points[0], points[1], points[2]};
-		triangleclass triangle1 (arg_points1);
+		for (int x = 0; x < 4; ++x)
+			lengths[x]  = (points[(x<3)?x+1:0].pos - points[x].pos).length();
 		
-		point * arg_points2[] = {points[1], points[2], points[3]};
-		triangleclass triangle2 (arg_points2);
+		lengths[4]  = (points[2].pos - points[0].pos).length();
 		
-		point * arg_points3[] = {points[2], points[3], points[0]};
-		triangleclass triangle3 (arg_points3);
-		
-		
-		triangles[0] = triangle1;
-		triangles[1] = triangle2;
-		triangles[2] = triangle3;
+		lengths[5]  = (points[3].pos - points[1].pos).length();
 	}
 	
 	void update_phys(bool mouse) {
-		triangles[0].update_phys();
+		if (mouse) move_to_mouse(&points[0]);
 		
-		if (mouse) move_to_mouse(triangles[0].points[0]);
+		shape();
+		shape();
+		for (int x = 0; x < 4; x++) {
+			points[x].update_phys();
+		}
+		shape();
+		shape();
 		
-		triangles[1].update_phys();
-		
-		triangles[2].update_phys();
-		
-		if (mouse) move_to_mouse(triangles[2].points[2]);
+		if (mouse) move_to_mouse(&points[0]);
 	}
 	
 	void draw(BITMAP* buffer) {
-		triangles[0].draw(buffer);
-		triangles[1].draw(buffer);
-		triangles[2].draw(buffer);
+		for (int x = 0; x < 4; ++x)
+			line(buffer,
+			points[x].pos.x, 
+			points[x].pos.y, 
+			points[(x<3)?x+1:0].pos.x, 
+			points[(x<3)?x+1:0].pos.y,
+			makecol(255, 0, 0));
 	}
 
-	bool inside(point point1) {
-		float p[4][2];
-		p[0][0] = points[0]->pos_x + ((points[1]->pos_x - points[0]->pos_x)/2);
-		p[0][1] = points[0]->pos_y + ((points[1]->pos_y - points[0]->pos_y)/2);
+	Vector * inside(Vector point1) {
+		static Vector p[4];
+		p[0] = points[0].pos + ((points[1].pos - points[0].pos)/2);
+		p[1] = points[1].pos + ((points[2].pos - points[1].pos)/2);
+		p[2] = points[2].pos + ((points[3].pos - points[2].pos)/2);
+		p[3] = points[3].pos + ((points[0].pos - points[3].pos)/2);
 		
-		p[1][0] = points[1]->pos_x + ((points[2]->pos_x - points[1]->pos_x)/2);
-		p[1][1] = points[1]->pos_y + ((points[2]->pos_y - points[1]->pos_y)/2);
+		Vector v[4];
+		v[0] = (points[1].pos-points[0].pos).ccper();
+		v[1] = (points[2].pos-points[1].pos).ccper();
+		v[2] = (points[3].pos-points[2].pos).ccper();
+		v[3] = (points[0].pos-points[3].pos).ccper();
 		
-		p[2][0] = points[2]->pos_x + ((points[3]->pos_x - points[2]->pos_x)/2);
-		p[2][1] = points[2]->pos_y + ((points[3]->pos_y - points[2]->pos_y)/2);
+		Vector v2[4];
+		v2[0] = point1 - p[0];
+		v2[1] = point1 - p[1];
+		v2[2] = point1 - p[2];
+		v2[3] = point1 - p[3];
 		
-		p[3][0] = points[3]->pos_x + ((points[0]->pos_x - points[3]->pos_x)/2);
-		p[3][1] = points[3]->pos_y + ((points[0]->pos_y - points[3]->pos_y)/2);
-		
-		float v[4][2];
-		v[0][0] = points[1]->pos_x - points[0]->pos_x;
-		v[0][1] = points[1]->pos_y - points[0]->pos_y;
-		
-		v[1][0] = points[2]->pos_x - points[1]->pos_x;
-		v[1][1] = points[2]->pos_y - points[1]->pos_y;
-		
-		v[2][0] = points[3]->pos_x - points[2]->pos_x;
-		v[2][1] = points[3]->pos_y - points[2]->pos_y;
-		
-		v[3][0] = points[0]->pos_x - points[3]->pos_x;
-		v[3][1] = points[0]->pos_y - points[3]->pos_y;
-		
-		float v2[4][2];
-		v2[0][0] = point1.pos_x - p[0][0];
-		v2[0][1] = point1.pos_y - p[0][1];
-		
-		v2[1][0] = point1.pos_x - p[1][0];
-		v2[1][1] = point1.pos_y - p[1][1];
-		
-		v2[2][0] = point1.pos_x - p[2][0];
-		v2[2][1] = point1.pos_y - p[2][1];
-		
-		v2[3][0] = point1.pos_x - p[3][0];
-		v2[3][1] = point1.pos_y - p[3][1];
 		
 		if (0<=skalarpr(v[0],v2[0]) && 
 			0<=skalarpr(v[1],v2[1]) && 
 			0<=skalarpr(v[2],v2[2]) && 
 			0<=skalarpr(v[3],v2[3])) {
-			return true;
+			return p;
 		}
+		return 0;
+	}
+	
+	void shape() {
+		attract_points(&points[0], &points[2], lengths[4]);
+		attract_points(&points[1], &points[3], lengths[5]);
 		
-		/*float v[] = {point1.pos_x - points[0]->pos_x, point1.pos_y - points[0]->pos_y};
-		float v1[] = {points[1]->pos_x - points[0]->pos_x, points[1]->pos_y - points[0]->pos_y};
-		float v2[] = {points[3]->pos_x - points[0]->pos_x, points[3]->pos_y - points[0]->pos_y};
-		if (0<=skalarpr(v,v1) && 
-			0<=skalarpr(v1,v1) && 
-			0<=skalarpr(v,v2) && 
-			0<=skalarpr(v2,v2)) {
-			return true;
-		}*/
-		return false;
+		for (int x = 0; x < 4; ++x)
+			attract_points(&points[x], &points[(x<3)?x+1:0], lengths[x]);
+		
+		attract_points(&points[0], &points[2], lengths[4]);
+		attract_points(&points[1], &points[3], lengths[5]);
+		
+		if (is_vreng()) vreng();
 	}
-	
 	private:
-	void move_to_mouse(point * mousepoint) {
-		*mousepoint = * new point(mouse_x, mouse_y, mousepoint->width, mousepoint->height);
+	void attract_points(point * p1, point * p2, float dist) {
+		float katX = p2->pos.x - p1->pos.x;
+		float katY = p2->pos.y - p1->pos.y;
+		
+		float hyp  = sqrt( pow(katX, 2) + pow(katY, 2) );
+		
+		float moveX = (dist-hyp) * (katX/hyp);
+		float moveY = (dist-hyp) * (katY/hyp);
+		
+		p1->attract_to(false, moveX, moveY);
+		p2->attract_to(true , moveX, moveY);
 	}
 	
-	float skalarpr(float v1[2], float v2[2]) {
-		return (v1[0] * v2[0]) + (v1[1] * v2[1]);
+	void move_to_mouse(point * mousepoint) {
+		*mousepoint = * new point(Vector(mouse_x, mouse_y), mousepoint->width, mousepoint->height);
+	}
+	
+	float skalarpr(Vector v1, Vector v2) {
+		return (v1.x * v2.x) + (v1.y * v2.y);
+	}
+	
+	bool is_vreng() {
+		Vector v = points[0].pos + ((points[1].pos - points[0].pos)/20);
+		Vector v1 = v + ((points[3].pos - points[0].pos)/20);
+		return (0 == inside(v1));
+	}
+	
+	void vreng() {
+		point temp;
+		temp = points[0];
+		points[0] = points[2];
+		points[2] = temp;
 	}
 	
 };
